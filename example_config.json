@@ -1,0 +1,89 @@
+{
+    "corpus":"data/tab/corpora/TAB_test_Corpus.json",
+    "anonymizations":{
+        "St.NER3":"data/tab/anonymizations/TAB_test_St.NER3_Entity.json",
+        "St.NER4":"data/tab/anonymizations/TAB_test_St.NER4_Entity.json",
+        "St.NER7":"data/tab/anonymizations/TAB_test_St.NER7_Entity.json",
+        "spaCy":"data/tab/anonymizations/TAB_test_spaCy_Entity.json",
+        "Presidio":"data/tab/anonymizations/TAB_test_Presidio_Entity.json",
+        "Manual_Supression":"data/tab/anonymizations/TAB_test_Manual_Supression.json",
+        "Manual_Entity":"data/tab/anonymizations/TAB_test_Manual_Entity.json",
+        "Manual_INTACT":"data/tab/anonymizations/TAB_test_Manual_INTACT.json"
+    },
+    "results_file_path":"outputs/results.csv",
+    "metrics":{
+        "Precision":{
+            "token_level":true,
+            "weighting_model_name":null,
+            "weighting_max_segment_length":100
+        },
+        "PrecisionWeighted":{
+            "token_level":true,
+            "weighting_model_name":"google-bert/bert-base-uncased",
+            "weighting_max_segment_length":100
+        },
+        "TPI":{
+            "term_alterning":6,
+            "use_chunking":true,
+            "weighting_model_name":"google-bert/bert-base-uncased",
+            "weighting_max_segment_length":100
+        },
+        "TPS":{
+            "similarity_model_name":"paraphrase-albert-base-v2",
+            "term_alterning":6,
+            "use_chunking":true,
+            "weighting_model_name":"google-bert/bert-base-uncased",
+            "weighting_max_segment_length":100
+        },
+        "NMI":{
+            "embedding_model_name":"all-MiniLM-L6-v2",
+            "remove_mask_marks":true,
+            "mask_marks":["SENSITIVE", "PERSON", "DEM", "LOC",
+                 "ORG", "DATETIME", "QUANTITY", "MISC",
+                 "NORP", "FAC", "GPE", "PRODUCT", "EVENT",
+                 "WORK_OF_ART", "LAW", "LANGUAGE", "DATE",
+                 "TIME", "ORDINAL", "CARDINAL", "DATE_TIME", "DATETIME",
+                 "NRP", "LOCATION", "ORGANIZATION", "***"],
+            "min_k":2,
+            "max_k":32,
+            "k_multiplier":2,
+            "n_clusterings":5,
+            "n_tries_per_clustering":50
+        },
+        "Recall":{
+            "token_level":true,
+            "include_direct":true,
+            "include_quasi":true
+        },
+        "RecallPerEntityType":{
+            
+        },
+        "TRIR":{
+            "output_folder_path":"outputs/tab/TAB_test_BK=Public",
+            "background_knowledge_file_path":"data/tab/bks/TAB_test_BK=Public.json",
+            "load_saved_pretreatment":false,
+            "add_non_saved_anonymizations":true,
+            "anonymize_background_knowledge":true,
+            "only_use_anonymized_background_knowledge":false,
+            "use_document_curation":true,
+            "save_pretreatment":true,
+            "load_saved_finetuning":false,
+            "base_model_name":"distilbert-base-uncased",
+            "tokenization_block_size":250,
+            "use_additional_pretraining":true,
+            "save_additional_pretraining":true,
+            "load_saved_pretraining":false,
+            "pretraining_epochs":3,
+            "pretraining_batch_size":8,
+            "pretraining_learning_rate":5e-05,
+            "pretraining_mlm_probability":0.15,
+            "pretraining_sliding_window":"512-128",
+            "finetuning_epochs":15,
+            "finetuning_batch_size":16,
+            "finetuning_learning_rate":5e-05,
+            "finetuning_sliding_window":"100-25",
+            "save_finetuning":true,
+            "verbose":false
+        }
+    }   
+}
