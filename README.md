@@ -5,7 +5,7 @@
 
 This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for text anonymization including multiple state-of-the-art metrics for both utility preservation and privacy protection.
 
-Experimental data was extracted from the [text-anonymization-benchmark](https://github.com/NorskRegnesentral/text-anonymization-benchmark) repository, corresponding to the publication [Pilán, I., Lison, P., Øvrelid, L., Papadopoulou, A., Sánchez, D., & Batet, M., Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/). The exact data files utilized are located in the [data](data) folder.
+Experimental data was extracted from the [text-anonymization-benchmark](https://github.com/NorskRegnesentral/text-anonymization-benchmark) repository, corresponding to the publication [Pilán, I., Lison, P., Øvrelid, L., Papadopoulou, A., Sánchez, D., & Batet, M., Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/). The exact files utilized are located in the [data](data) folder.
 
 
 
@@ -65,21 +65,21 @@ Text Anonymization Evaluator (TAE)
 
 
 # Install
-Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/) 24.1.2, with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and uploading the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi).
+Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and uploading the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi).
 
 ## From source
 If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from source following the next steps:
 1. Download or clone this repository:
     ```console
-    git clone https://github.com/BenetManzanaresSalor/CLEANUP_Evaluation
-    cd CLEANUP_Evaluation
+    git clone https://github.com/BenetManzanaresSalor/TAE
+    cd TAE
     ```
 2. Install dependencies:
     * Option A: Using Conda 
         * Install [Conda](https://docs.conda.io/en/latest/) if you haven't already.
-        * Create a new Conda environment using the [environment.yml](environment.yml) file (channels are included for ensuring that specific versions can be installed):
+        * Create a new Conda environment using the [environment.yml](environment.yml) file:
             ```console
-            conda create --name ENVIRONMENT_NAME --file environment.yml -c conda-forge -c spacy -c pytorch -c nvidia -c huggingface -c numpy -c pandas
+            conda create --name ENVIRONMENT_NAME --file environment.yml
             ```
         * Activate the environment:
             ```console
@@ -91,9 +91,11 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
         ```
 
 ## From PyPi
+**IMPORTANT: This package has not yet been uploaded to PyPi.**
+
 If you want to use TAE from code (see [Usage section](#usage-examples) for details), we recommend installing it from PyPi via Pip with the following command:
 ```console
-pip install taeval #NOTE: It does not work because the package has not yet been uploaded to PyPi.
+pip install taeval
 ```
 
 
