@@ -254,8 +254,8 @@ The configurable parameters are:
 
 #### TPI
 **Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
-It was proposed in **Manzanares-Salor et al., A comparative analysis, enhancement and evaluation of text anonymization with pre-trained Large Language Models, Expert Systems With Applications, In Press, 2025**.
-TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.
+<!--It was proposed in **Manzanares-Salor et al., A comparative analysis, enhancement and evaluation of text anonymization with pre-trained Large Language Models, Expert Systems With Applications, In Press, 2025**.
+TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.-->
 
 The configurable parameters are:
 * `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
@@ -270,8 +270,8 @@ The configurable parameters are:
 
 #### TPS
 **Text Preserved Similarity (TPS)** measures the percentage of information content (IC) still present in the masked documents, weighted by the similarity between replacement and original terms.
-It was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Submitted, 2024](https://arxiv.org/abs/2412.12928).
-TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.
+It was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Applied Soft Computing, 2025](https://doi.org/10.1016/j.asoc.2025.114013).
+<!--TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.-->
 
 The configurable parameters are:
 * `similarity_model_name | String | Default="paraphrase-albert-base-v2"`: Name of the embedding model for calculating replacement similarity.
