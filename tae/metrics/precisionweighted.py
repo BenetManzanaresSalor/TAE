@@ -1,9 +1,8 @@
 import logging
 from typing import Dict, List, Optional
 
+from ..utils import IC_WEIGHTING_MODEL_NAME, Document, MaskedDocument, IC_WEIGHTING_MAX_SEGMENT_LENGTH
 from .precision import Precision, PRECISION_TOKEN_LEVEL
-
-from ..utils import IC_WEIGHTING_MODEL_NAME, Document, ICTokenWeighting, MaskedDocument, UniformTokenWeighting, DEVICE, IC_WEIGHTING_MAX_SEGMENT_LENGTH
 
 class PrecisionWeighted(Precision):
     def _anonymization_eval(self, masked_docs:List[MaskedDocument],

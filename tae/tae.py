@@ -47,7 +47,7 @@ METRICS_REQUIRING_GOLD_ANNOTATIONS = [PRECISION_METRIC_NAME, WEIGHTED_PRECISION_
 
 #endregion
 
-
+#TODO: Remove
 #region Metric-specific
 
 # Precision default settings
@@ -125,18 +125,7 @@ class TAE:
         # Preprocess corpus
         self._preprocess_corpus(corpus, spacy_model_name)
 
-        # Create dictionary of metric functions (used in _get_partial_metric_func) #TODO: Remove
-        self.metrics_funcs = {PRECISION_METRIC_NAME:self.get_precision,
-                              WEIGHTED_PRECISION_METRIC_NAME:self.get_weighted_precision,
-                              RECALL_METRIC_NAME:self.get_recall,
-                              RECALL_PER_ENTITY_METRIC_NAME:self.get_recall_per_entity_type,
-                              TPI_METRIC_NAME:self.get_TPI,
-                              TPS_METRIC_NAME:self.get_TPS,
-                              NMI_METRIC_NAME:self.get_NMI,
-                              TRIR_METRIC_NAME:self.get_TRIR}
-
         self.metric_classes = self._get_declared_metrics()
-        print(self.metric_classes)
 
     def _preprocess_corpus(self, corpus, spacy_model_name):
         self.documents = {}  # Dictionary of documents indexed by identifier
@@ -386,9 +375,9 @@ class TAE:
     #region Utility metrics
 
 
+    #TODO: Remove
     #region Precision
     
-    #TODO: Remove
     def get_precision(self, masked_docs:List[MaskedDocument], weighting_model_name:Optional[str]=None,
                       weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH,
                       token_level:bool=PRECISION_TOKEN_LEVEL,
