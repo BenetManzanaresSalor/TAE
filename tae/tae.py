@@ -6,6 +6,9 @@ from typing import Dict, List, Tuple, Optional, Set, Iterator, Union
 from datetime import datetime
 from dataclasses import dataclass
 from functools import partial
+import inspect
+import pkgutil
+import importlib
 
 from tqdm.autonotebook import tqdm
 import numpy as np
@@ -19,6 +22,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score, silhouette_score
 
 from .utils import *
+from .metrics import MetricABC
 from .tri import TRI
 
 #endregion
@@ -131,7 +135,8 @@ class TAE:
                               NMI_METRIC_NAME:self.get_NMI,
                               TRIR_METRIC_NAME:self.get_TRIR}
 
-        self.metric_classes = {}
+        self.metric_classes = self._get_declared_metrics()
+        print(self.metric_classes)
 
     def _preprocess_corpus(self, corpus, spacy_model_name):
         self.documents = {}  # Dictionary of documents indexed by identifier
@@ -160,6 +165,32 @@ class TAE:
         # Notify the number and percentage of annotated documents
         self.gold_annotations_ratio = n_docs_with_annotations / len(self.documents)
         logging.info(f"Number of gold annotated documents: {n_docs_with_annotations} ({self.gold_annotations_ratio:.3%})")
+
+    def _get_declared_metrics(self, package_name="tae.metrics", abstract_class=MetricABC):
+        name_to_type = {}
+        
+        # 1. Load the parent package
+        package = importlib.import_module(package_name)
+
+        # 2. Iterate over modules in the package
+        for loader, module_name, is_pkg in pkgutil.iter_modules(package.__path__):
+            if is_pkg:
+                continue
+
+            full_module_name = f"{package_name}.{module_name}"
+            module = importlib.import_module(full_module_name)
+
+            # 3. Inspect members
+            for class_name, class_type in inspect.getmembers(module, inspect.isclass):
+                # Check 1: Is it a subclass of our abstract base?
+                # Check 2: Is it NOT the abstract base itself?
+                # Check 3: Was it DEFINED in this specific module?
+                if (issubclass(class_type, abstract_class) and 
+                    class_type is not abstract_class and 
+                    class_type.__module__ == full_module_name):          
+                    name_to_type[class_name.lower()] = class_type
+
+        return name_to_type
 
     #endregion
 

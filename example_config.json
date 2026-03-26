@@ -7,8 +7,7 @@
         "spaCy":"data/tab/anonymizations/TAB_test_spaCy_Entity.json",
         "Presidio":"data/tab/anonymizations/TAB_test_Presidio_Entity.json",
         "Manual_Supression":"data/tab/anonymizations/TAB_test_Manual_Supression.json",
-        "Manual_Entity":"data/tab/anonymizations/TAB_test_Manual_Entity.json",
-        "Manual_INTACT":"data/tab/anonymizations/TAB_test_Manual_INTACT.json"
+        "Manual_Entity":"data/tab/anonymizations/TAB_test_Manual_Entity.json"
     },
     "results_file_path":"outputs/results.csv",
     "metrics":{
