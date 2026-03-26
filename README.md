@@ -47,7 +47,7 @@ Text Anonymization Evaluator (TAE)
 │   example_config.json                     # Example configuration file
 └───taeval                                  # Package source code folder
 │   |   __init__.py                         # Script for package initialization
-│   |   __main__.py                         # Script to be executed as CLI
+│   |   __main__.py                         # Script to be executed from CLI
 │   │   tae.py                              # Script including the TAE class, containing the main code of the package
 │   |   tri.py                              # Script including the TRI class for re-identification risk assessment
 │   |   utils.py                            # Script including the general common-usage classes
@@ -198,7 +198,7 @@ Subsections below detail all the parameters for each of the concepts, including 
         }
         ```
 
-*NOTE: When using the `TAE` constructor [from code](#from-code), `corpus` can also be the list of dictionaries directly, rather than a path to a JSON file containing it. In this way, data load from disk can be reduced.*
+*NOTE: When using the `TAE` constructor [from code](#from-code), `corpus` can also be the list of dictionaries, rather than a path to a JSON file containing it. In this way, data load from disk can be reduced.*
 
 
 ## Anonymizations
@@ -254,7 +254,7 @@ The configurable parameters are:
 
 #### TPI
 **Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
-<!--It was proposed in **Manzanares-Salor et al., A comparative analysis, enhancement and evaluation of text anonymization with pre-trained Large Language Models, Expert Systems With Applications, In Press, 2025**.
+<!--It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
 TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.-->
 
 The configurable parameters are:

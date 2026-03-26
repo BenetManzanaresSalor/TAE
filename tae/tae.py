@@ -117,14 +117,28 @@ class TAE:
                 corpus = json.load(f)
             if type(corpus)!=list:
                 raise RuntimeError("Corpus JSON file must be a list of documents")
+        
+        # Preprocess corpus
+        self._preprocess_corpus(corpus, spacy_model_name)
 
-        # Documents indexed by identifier
-        self.documents = {}
+        # Create dictionary of metric functions (used in _get_partial_metric_func) #TODO: Remove
+        self.metrics_funcs = {PRECISION_METRIC_NAME:self.get_precision,
+                              WEIGHTED_PRECISION_METRIC_NAME:self.get_weighted_precision,
+                              RECALL_METRIC_NAME:self.get_recall,
+                              RECALL_PER_ENTITY_METRIC_NAME:self.get_recall_per_entity_type,
+                              TPI_METRIC_NAME:self.get_TPI,
+                              TPS_METRIC_NAME:self.get_TPS,
+                              NMI_METRIC_NAME:self.get_NMI,
+                              TRIR_METRIC_NAME:self.get_TRIR}
+
+        self.metric_classes = {}
+
+    def _preprocess_corpus(self, corpus, spacy_model_name):
+        self.documents = {}  # Dictionary of documents indexed by identifier
 
         # Loading the spaCy model
-        self.spacy_nlp = spacy.load(spacy_model_name, disable=["lemmatizer"])        
+        self.spacy_nlp = spacy.load(spacy_model_name, disable=["lemmatizer"])    
         
-        # Load corpus
         n_docs_with_annotations = 0
         for doc in tqdm(corpus, desc=f"Loading corpus of {len(corpus)} documents"):
             for key in MANDATORY_CORPUS_KEYS:
@@ -147,22 +161,75 @@ class TAE:
         self.gold_annotations_ratio = n_docs_with_annotations / len(self.documents)
         logging.info(f"Number of gold annotated documents: {n_docs_with_annotations} ({self.gold_annotations_ratio:.3%})")
 
-        # Create dictionary of metric functions (used in _get_partial_metric_func)
-        self.metrics_funcs = {PRECISION_METRIC_NAME:self.get_precision,
-                              WEIGHTED_PRECISION_METRIC_NAME:self.get_weighted_precision,
-                              RECALL_METRIC_NAME:self.get_recall,
-                              RECALL_PER_ENTITY_METRIC_NAME:self.get_recall_per_entity_type,
-                              TPI_METRIC_NAME:self.get_TPI,
-                              TPS_METRIC_NAME:self.get_TPS,
-                              NMI_METRIC_NAME:self.get_NMI,
-                              TRIR_METRIC_NAME:self.get_TRIR}
-
     #endregion
 
 
     #region Evaluation
 
     def evaluate(self, anonymizations:Union[Dict[str, List[MaskedDocument]],Dict[str, str]], metrics:Dict[str,dict], results_file_path:Optional[str]=None) -> dict:
+        """
+        Evaluates multiple anonymizations based on the specified metrics.
+
+        Args:
+            anonymizations (Union[Dict[str, List[MaskedDocument]],Dict[str, str]]): A dictionary where keys are anonymization names
+                and values are lists of MaskedDocument or strings corresponding to paths to JSON files containing the anonymizations. 
+                In the latter case, the lists of MaskedDocument contained in those JSON files are loaded.
+            metrics (Dict[str, dict]): A dictionary where keys are metric names and values are their parameters.
+                Metric names are splitted by underscores ("_"). The string before the first underscore must be one of those present in `METRIC_NAMES`.
+            results_file_path (Optional[str]): The path to a file where results will be written.
+
+        Returns:
+            dict: A dictionary containing the evaluation results for each metric and anonymization.
+        """
+        
+        results = {}
+
+        # Load anonymizations from disk if they are paths
+        if isinstance(next(iter(anonymizations.values())),str):
+            for anon_name, anon_file_path in anonymizations.items():
+                anonymizations[anon_name] = MaskedCorpus(anon_file_path)
+
+        # Initial checks
+        self._eval_checks(anonymizations, metrics)
+
+        # Write results file header
+        if results_file_path:
+            self._write_into_results(results_file_path, ["Metric/Anonymization"]+list(anonymizations.keys()))
+
+        # For each metric
+        for metric_name, metric_parameters in metrics.items():
+            logging.info(f"########################### Computing {metric_name} metric ###########################")
+            try:
+                metric_key = metric_name.split("_")[0].lower() # Text before first underscore is name of the metric, the rest is freely used
+                metric_class = self.metric_classes.get(metric_key, None)
+
+                # If metric is invalid
+                if metric_class is None:
+                    logging.warning("There are no results because the metric name is invalid.")                
+                # Otherwise, compute
+                else:
+                    metric_instance = metric_class() # Instanciate
+                    metric_results = metric_instance.evaluate(anonymizations, self.documents, **metric_parameters) # Compute
+                    del metric_instance # Delete instance for saving memory
+
+                    # Save results
+                    results[metric_name] = metric_results
+                    if results_file_path:
+                        self._write_into_results(results_file_path, [metric_name]+list(metric_results.values()))
+                    
+                    # Show results all together for inmediate comparison
+                    msg = f"Results for {metric_name}:"
+                    for name, value in metric_results.items():
+                        msg += f"\n\t\t\t\t\t{name}: {value}"
+                    logging.info(msg)
+            
+            except Exception as e:
+                logging.error(f"Exception in metric {metric_name}: {e}")
+        
+        return results
+
+    #TODO: Remove
+    def old_evaluate(self, anonymizations:Union[Dict[str, List[MaskedDocument]],Dict[str, str]], metrics:Dict[str,dict], results_file_path:Optional[str]=None) -> dict:
         """
         Evaluates multiple anonymizations based on the specified metrics.
 
@@ -264,6 +331,7 @@ class TAE:
             elif name in METRICS_REQUIRING_GOLD_ANNOTATIONS and self.gold_annotations_ratio < 1:
                 raise RuntimeError(f"Metric {name} depends on gold annotations, but these are not present for all documents (only for a {self.gold_annotations_ratio:.3%})")
 
+    #TODO: Remove
     def _get_partial_metric_func(self, metric_name:str, parameters:dict) -> Optional[partial]:
         func = self.metrics_funcs.get(metric_name, None)
         partial_func = None if func is None else partial(func, **parameters)
@@ -289,6 +357,7 @@ class TAE:
 
     #region Precision
     
+    #TODO: Remove
     def get_precision(self, masked_docs:List[MaskedDocument], weighting_model_name:Optional[str]=None,
                       weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH,
                       token_level:bool=PRECISION_TOKEN_LEVEL,
@@ -400,7 +469,7 @@ class TAE:
         """
         **Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
         This metric is used to assess utility preservation.
-        It was proposed in **Manzanares-Salor et al., A comparative analysis, enhancement and evaluation of text anonymization with pre-trained Large Language Models, Expert Systems With Applications, In Press, 2025**.
+        It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
         The `ICTokenWeighting` is employed for measuring IC.
         TPI can be seen as an simplified/ablated version of Text Preserved Similarity (TPS), not taking into account replacements and their similarities.
 
