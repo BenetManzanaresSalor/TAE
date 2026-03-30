@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tae"
-version = "0.1.0"
+version = "1.1.0"
 description = "Text Anonymization Evaluator (TAE)"
 authors = ["Benet Manzanares-Salor <benet.manzanares@urv.cat>"]
 maintainers = ["Benet Manzanares-Salor <benet.manzanares@urv.cat>"]

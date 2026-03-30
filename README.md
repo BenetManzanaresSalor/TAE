@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/License-MIT-orange" alt="License MIT"/>
 </p>
 
-This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for text anonymization including multiple state-of-the-art metrics for both utility preservation and privacy protection assessment.
+This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for anonymized documents including multiple state-of-the-art metrics for both utility preservation and privacy protection assessment.
 
 Experimental data was extracted from the [text-anonymization-benchmark](https://github.com/NorskRegnesentral/text-anonymization-benchmark) repository, corresponding to the publication [Pilán, I., Lison, P., Øvrelid, L., Papadopoulou, A., Sánchez, D., & Batet, M., Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/). The exact files utilized are located in the [data](data) folder.
 
