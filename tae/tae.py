@@ -164,18 +164,18 @@ class TAE:
                     metric_results = metric_instance.evaluate(anonymizations, self.documents, **metric_parameters)
                     del metric_instance # Delete instance for saving memory
 
-                    # Save results into file
+                    # Save results
                     results[metric_name] = metric_results
-                    if results_file_path:
-                        value_strings = []
-                        for value in metric_results.values():
-                            value_strings.append(f"{value:.3f}" if isinstance(value, float) else str(value))
+                    value_strings = []
+                    for value in metric_results.values():
+                        value_strings.append(f"{value:.3f}" if isinstance(value, float) else str(value))
+                    if results_file_path:                        
                         self._write_into_results(results_file_path, [metric_name]+value_strings)
                     
                     # Show results all together for inmediate comparison
                     msg = f"Results for {metric_name}:"
-                    for name, value in metric_results.items():
-                        msg += f"\n\t\t\t\t\t{name}: {value:.3f}" # 3 decimals
+                    for anon_name, value_str in zip(metric_results.keys(), value_strings):
+                        msg += f"\n\t\t\t\t\t{anon_name}: {value_str}"
                     logging.info(msg)
             
             except Exception as e:
