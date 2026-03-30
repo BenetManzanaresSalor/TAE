@@ -164,11 +164,13 @@ class TAE:
                     metric_results = metric_instance.evaluate(anonymizations, self.documents, **metric_parameters)
                     del metric_instance # Delete instance for saving memory
 
-                    # Save results
+                    # Save results into file
                     results[metric_name] = metric_results
                     if results_file_path:
-                        values = [f"{v:.3f}" for v in metric_results.values()] # 3 decimals
-                        self._write_into_results(results_file_path, [metric_name]+values)
+                        value_strings = []
+                        for value in metric_results.values():
+                            value_strings.append(f"{value:.3f}" if isinstance(value, float) else str(value))
+                        self._write_into_results(results_file_path, [metric_name]+value_strings)
                     
                     # Show results all together for inmediate comparison
                     msg = f"Results for {metric_name}:"
