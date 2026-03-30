@@ -41,7 +41,8 @@ class NMI(MetricABC):
         The returned results are those corresponding to the K which provided the best [silouhette score](https://www.sciencedirect.com/science/article/pii/0377042787901257) in original texts clustering.
 
         Args:
-            anonymizations (Dict[str, List[MaskedDocument]]): A dictionary where keys are anonymization names and values are lists of masked documents.
+            aanonymizations (Dict[str, List[MaskedDocument]]): A dictionary mapping anonymization method names to lists of `MaskedDocument`.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             min_k (int): The minimum number of clusters `k` to consider.
             max_k (int): The maximum number of clusters `k` to consider.
             k_multiplier (int): The multiplier to increase `k` for each iteration.

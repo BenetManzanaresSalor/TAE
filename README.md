@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/License-MIT-orange" alt="License MIT"/>
 </p>
 
-This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for text anonymization including multiple state-of-the-art metrics for both utility preservation and privacy protection.
+This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for text anonymization including multiple state-of-the-art metrics for both utility preservation and privacy protection assessment.
 
 Experimental data was extracted from the [text-anonymization-benchmark](https://github.com/NorskRegnesentral/text-anonymization-benchmark) repository, corresponding to the publication [Pilán, I., Lison, P., Øvrelid, L., Papadopoulou, A., Sánchez, D., & Batet, M., Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/). The exact files utilized are located in the [data](data) folder.
 
@@ -18,6 +18,7 @@ Experimental data was extracted from the [text-anonymization-benchmark](https://
 * [Usage examples](#usage-examples)
   * [From CLI](#from-cli)
   * [From code](#from-code)
+* [Extension guidelines](#extension-guidelines)
 * [Configuration](#configuration)
   * [Corpus](#corpus)
   * [Anonymizations](#anonymizations)
@@ -45,27 +46,28 @@ Text Anonymization Evaluator (TAE)
 │   environment.yml                         # Dependencies file for Conda
 │   LICENSE.txt                             # License file
 │   example_config.json                     # Example configuration file
-└───taeval                                  # Package source code folder
-│   |   __init__.py                         # Script for package initialization
-│   |   __main__.py                         # Script to be executed from CLI
-│   │   tae.py                              # Script including the TAE class, containing the main code of the package
-│   |   tri.py                              # Script including the TRI class for re-identification risk assessment
+└───tae                                  # Package source code folder
+│   │   tae.py                              # Script describing the TAE class
 │   |   utils.py                            # Script including the general common-usage classes
+│   |   __main__.py                         # Script to be executed from CLI
+│   └───metrics                             # Folder containing metrics' implementations
+|       | metric_abc.py                     # Abstract class from which metrics inherit
+|       | ...
 └───data                                    # Folder for data files
     └───tab                                 # Folder for TAB dataset
         └───corpora                         # Folder for dataset's corpus files
-        |   |...
+        |   | ...
         └───anonymizations                  # Folder for anonymizations to evaluate
-        |   |...
+        |   | ...
         └───bks                             # Folder for background knowledges for re-identification risk assessment
-            |...
+            | ...
 ```
 
 
 
 
 # Install
-Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and uploading the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi).
+Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and planning to upload the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi) (*work in progress*).
 
 ## From source
 If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from source following the next steps:
@@ -91,7 +93,7 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
         ```
 
 ## From PyPi
-**IMPORTANT: This package has not yet been uploaded to PyPi.**
+**IMPORTANT: This package has not yet been uploaded to PyPi, this is a work in progress.**
 
 If you want to use TAE from code (see [Usage section](#usage-examples) for details), we recommend installing it from PyPi via Pip with the following command:
 ```console
@@ -150,6 +152,30 @@ results = tae.evaluate(anonymizations, metrics, results_file_path)
 # NOTE: The TAE instance can be reused for evaluating the corpus using other anonymizations, metrics and/or results filepath
 ```
 This assumes that you have TAE ready to import. That is trivial if you have install it [from PyPi](#from-pypi), but requires you to have the [tae](tae) package folder within your project workspace if you have install it [from source](#from-source). That is why we recommend to install it [from PyPi](#from-pypi) for usage from code.
+
+
+
+
+# Extension guidelines
+To add a **new metric** to the evaluation framework:
+1. **Create a new file** in the [tae/metrics](tae/metrics) folder (e.g., `your_metric.py`).
+2. **Inherit** from `MetricABC` and implement the required `_evaluate_anonymization` method.
+ Alternatively, **override** the `evaluate` method if your metric requires simultaneous access to all anonymizations, as it is done in [TRIR](tae/metrics/trir.py) and [NMI](tae/metrics/nmi.py) classes.
+3. Ensure your metric returns a `float` for single-method evaluation (i.e., overriding `_evaluate_anonymization`) or a `Dict[str, float]` for multi-method evaluation (i.e., overriding `evaluate`).
+
+Your new metric will be **automatically registered** and available as a valid metric using its class name as metric's key (see [Metrics](#metrics) section).
+
+**Example:**
+```python
+from .metric_abc import MetricABC
+
+class YourNewMetric(MetricABC):
+    """A custom metric for evaluating anonymization performance."""
+
+    def _evaluate_anonymization(self, masked_docs, documents, **kwargs) -> float:
+        # Your custom logic here
+        return computed_value
+```
 
 
 
@@ -229,9 +255,10 @@ Subsections below detail all the parameters for each of the concepts, including 
 *NOTE: When using the `TAE.evaluate` function [from code](#from-code), anonymizations files can also be a list of `MaskedDocument` or a `MaskedCorpus` (i.e., dataclasses defined in [utils.py](tae/utils.py)) directly. In this way, data load from disk can be reduced.*
 
 
+
 ## Metrics
 * `metrics | Dictionary`: Specification of all the evaluation metrics to use. Defined by a dictionary where:
-  * *key* corresponds to the `metric_name | String`. When processed, the value is split by the underscore ("_") character. The first part of the split, or the entire string if no underscore exists, is taken as the `metric_key`. This identifier must match one of the following: `["Precision", "PrecisionWeighted", "TPI", "TPS", "NMI", "Recall", "RecallPerEntityType", "TRIR"]`. If the `metric_key` is invalid (for instance, because `metric_name` starts with an underscore) this triggers a warning log and prevents the metric from being computed. Any text following the first underscore is independent of the `metric_key`, and can be used to indicate variations of the same metric (*e.g.*, "TPS", "TPS_TA=4", "TPS_TA=4_bert").
+  * *key* corresponds to the `metric_name | String`. When processed, the value is split by the underscore ("_") character. The first part of the split, or the entire string if no underscore exists, is used as the `metric_key`. This must match one the name of a class in the `metrics` folder that inherits from `MetricABC`. By default, the available options are: `["Precision", "PrecisionWeighted", "TPI", "TPS", "NMI", "Recall", "RecallPerEntityType", "TRIR"]`. Custom metrics added following the [Extensions guidelines](#extension-guidelines) will also be considered. If the `metric_key` is invalid (for instance, because `metric_name` starts with an underscore) this triggers a warning log and prevents the metric from being computed. Any text following the first underscore is independent of the `metric_key`, and can be used to indicate variations of the same metric (*e.g.*, "TPS", "TPS_TA=4", "TPS_TA=4_bert").
 
   * *value* corresponds to the `metric_parameters | Dictionary`, which specifies the configurable parameters of a metric that are either mandatory or different from the default ones. This dictionary uses the `parameter_name | String` as *key* and the corresponding `parameter_value`, of varying type, as *value*. For all metrics except [TRIR](#trir), no parameters are mandatory, so `metric_parameters` can be empty, in which case the default settings are applied. **The following subsections describe the configurable parameters for each metric.**
 
@@ -422,8 +449,8 @@ After execution of TRIR, in the `output_folder_path` you can find the following 
   Example of a result table with three metrics and two anonymizations:
   | 2025-08-22 11:02:33 | Metric/Anonymization | Anonymization1 | Anonymization2 |
   |---------------------|----------------------|----------------|----------------|
-  | 2025-08-22 11:04:21 | TPS                  | 0.86           | 0.73           |
-  | 2025-08-22 11:05:42 | NMI                  | 0.62           | 0.55           |
+  | 2025-08-22 11:04:21 | Precision            | 0.86           | 0.73           |
+  | 2025-08-22 11:05:42 | TPI                  | 0.62           | 0.55           |
   | 2025-08-22 11:10:27 | TRIR                 | 0.17           | 0.12           |
 
 *NOTE: When executed [from code](#from-code), the `TAE.evaluate` function also returns the results as a dictionary, keys being the corresponding `metric_name` and values being another dictionary mapping `anonymization_name` to the obtained value.*

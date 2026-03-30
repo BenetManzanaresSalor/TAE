@@ -44,8 +44,8 @@ class TRIR(MetricABC):
         Using this knowledge, the attacker trains a classifier to associate documents with individuals, and then applies the model to anonymized documents in an attempt to link them to the correct individuals from the BK.
         TRIR is defined as the accuracy of this linkage process.
         Args:
-            anonymizations (Dict[str, List[MaskedDocument]]): A dictionary where keys are anonymization names
-                                                                and values are lists of masked documents.
+            anonymizations (Dict[str, List[MaskedDocument]]): A dictionary mapping anonymization method names to lists of `MaskedDocument`.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             background_knowledge_file_path (str): Path to the background knowledge JSON file (*e.g.*, "data/tab/bk/TAB_test_BK=Public.json"). The file must contain a dictionary of background knowledge documents where
                 *Key* is the `doc_id` of the document. Since the BK comprehends a *non-strict* superset of the protected individuals, some `doc_id`s may not appear in the corpus and not all corpus `doc_id`s will necessarily be present in the BK.
                 *Value*, on the other hand, is the textual content of the document.

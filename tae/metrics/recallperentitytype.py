@@ -13,7 +13,8 @@ class RecallPerEntityType(Recall):
         which allows for multi-annotated documents (performing a micro-average over annotators),
         token-level and mention-level assessment and independent consideration of direct and quasi identifiers.
         Args:
-            masked_docs (List[MaskedDocument]): Documents together with spans masked by the system.
+            masked_docs (List[MaskedDocument]): A list of `MaskedDocument` for a specific anonymization method.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             include_direct (bool): Whether to include direct identifiers in the metric.
             include_quasi (bool): Whether to include quasi identifiers in the metric.
             token_level (bool): Whether to compute the recall at the level of tokens or mentions.

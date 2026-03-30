@@ -20,7 +20,8 @@ class Recall(MetricABC):
         which allows for multi-annotated documents (performing a micro-average over annotators), token-level and mention-level assessment and 
         independent consideration of direct and quasi identifiers.
         Args:
-            masked_docs (List[MaskedDocument]): Documents together with spans masked by the anonymization method.
+            masked_docs (List[MaskedDocument]): A list of `MaskedDocument` for a specific anonymization method.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             include_direct (bool): Whether to consider direct identifiers in the metric computation.
             include_quasi (bool): Whether to include quasi identifiers in the metric computation.
             token_level (bool): If set to `True`, recall is computed at the level of tokens, otherwise it is at the mention-level.

@@ -26,7 +26,8 @@ class TPI(MetricABC):
         TPI can be seen as an simplified/ablated version of Text Preserved Similarity (TPS), not taking into account replacements and their similarities.
 
         Args:
-            masked_docs (List[MaskedDocument]): Documents together with spans masked by the anonymization method.
+            masked_docs (List[MaskedDocument]): A list of `MaskedDocument` for a specific anonymization method.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             weighting_model_name (Optional[str]): Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class. 
                 If `None`, uniform weighting (same weights for all) is used. 
                 The name must be a valid [HuggingFace's model](https://huggingface.co/models), such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).

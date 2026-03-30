@@ -18,7 +18,8 @@ class PrecisionWeighted(Precision):
         This avoids the need to select the `weighting_model_name` for IC weighting.
 
         Args:
-            masked_docs (List[MaskedDocument]): Documents together with spans masked by the anonymization method.
+            mmasked_docs (List[MaskedDocument]): A list of `MaskedDocument` for a specific anonymization method.
+            documents (Dict[str,Document]): A dictionary mapping document IDs to their original `Document` objects.
             weighting_model_name (Optional[str]): Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class.
                 Defaults to `IC_WEIGHTING_MODEL_NAME`.
                 If `None`, uniform weighting (same weights for all) is used. 
