@@ -24,6 +24,7 @@ MANDATORY_CONFIG_KEYS = [CORPUS_CONFIG_KEY, ANONYMIZATIONS_CONFIG_KEY, RESULTS_C
 
 if __name__ == "__main__":
 
+
     #region Additional configurations for running standalone
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO) # Configure logging
@@ -32,6 +33,7 @@ if __name__ == "__main__":
     logging.getLogger('torch').setLevel(logging.WARNING)                    # Suppress INFO logs from torch
 
     #endregion
+
 
     #region Arguments parsing
 
@@ -75,5 +77,6 @@ if __name__ == "__main__":
     tae.evaluate(anonymizations, metrics, results_file_path)
 
     #endregion
+
 
 #endregion
