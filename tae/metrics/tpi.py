@@ -13,7 +13,7 @@ TPI_USE_CHUNKING = True
 class TPI(MetricABC):
     ics_dict:Optional[Dict[str,np.ndarray]]=None
 
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document],
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document],
                             weighting_model_name:Optional[str]=IC_WEIGHTING_MODEL_NAME,
                             weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH, 
                             term_alterning:Union[int,str]=TPI_TERM_ALTERNING,

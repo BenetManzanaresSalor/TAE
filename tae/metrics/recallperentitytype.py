@@ -5,7 +5,7 @@ from ..utils import Document, MaskedDocument
 from .recall import Recall, RECALL_INCLUDE_DIRECT, RECALL_INCLUDE_QUASI, RECALL_TOKEN_LEVEL
 
 class RecallPerEntityType(Recall):
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], include_direct:bool=RECALL_INCLUDE_DIRECT, 
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], include_direct:bool=RECALL_INCLUDE_DIRECT, 
                                    include_quasi:bool=RECALL_INCLUDE_QUASI, token_level:bool=RECALL_TOKEN_LEVEL) -> Dict[str,float]:
         """
         It computes recall factored by the `entity_type` in the **manual annotations**, enabling a fine-grained analysis.

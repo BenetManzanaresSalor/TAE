@@ -8,7 +8,7 @@ from .metric_abc import MetricABC
 PRECISION_TOKEN_LEVEL=True
 
 class Precision(MetricABC):        
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument],
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument],
                             documents:Dict[str,Document],
                             weighting_model_name:Optional[str]=None,
                             weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH,

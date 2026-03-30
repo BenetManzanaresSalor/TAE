@@ -5,7 +5,7 @@ from ..utils import IC_WEIGHTING_MODEL_NAME, Document, MaskedDocument, IC_WEIGHT
 from .precision import Precision, PRECISION_TOKEN_LEVEL
 
 class PrecisionWeighted(Precision):
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument],
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument],
                             documents:Dict[str,Document],
                             weighting_model_name:Optional[str]=IC_WEIGHTING_MODEL_NAME,
                             weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH,
@@ -28,6 +28,6 @@ class PrecisionWeighted(Precision):
                 The latter implies that the whole human-annotated mention (rather than some tokens) needs to be masked for being considered a true positive.
             verbose (bool): Whether to print verbose output during execution.
         """
-        return super()._anonymization_eval(masked_docs, documents, weighting_model_name=weighting_model_name,
+        return super()._evaluate_anonymization(masked_docs, documents, weighting_model_name=weighting_model_name,
                       weighting_max_segment_length=weighting_max_segment_length,
                       token_level=token_level, verbose=verbose)

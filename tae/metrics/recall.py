@@ -10,7 +10,7 @@ RECALL_INCLUDE_QUASI=True
 RECALL_TOKEN_LEVEL=True
 
 class Recall(MetricABC):
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], include_direct:bool=RECALL_INCLUDE_DIRECT, 
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], include_direct:bool=RECALL_INCLUDE_DIRECT, 
                     include_quasi:bool=RECALL_INCLUDE_QUASI, token_level:bool=RECALL_TOKEN_LEVEL,
                     verbose:bool=True) -> float:
         """

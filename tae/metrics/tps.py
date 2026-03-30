@@ -14,7 +14,7 @@ TPS_USE_CHUNKING = True
 TPS_SIMILARITY_MODEL_NAME = "paraphrase-albert-base-v2" # From the Sentence Transformers library (https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) or others such as "bert-base-cased"
 
 class TPS(TPI):
-    def _anonymization_eval(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document],
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document],
                             weighting_model_name:Optional[str]=IC_WEIGHTING_MODEL_NAME,
                             weighting_max_segment_length:int=IC_WEIGHTING_MAX_SEGMENT_LENGTH, term_alterning=TPS_TERM_ALTERNING,
                             similarity_model_name:str=TPS_SIMILARITY_MODEL_NAME, use_chunking:bool=TPS_USE_CHUNKING,
