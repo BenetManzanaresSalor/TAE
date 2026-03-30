@@ -141,7 +141,7 @@ class TAE:
                 anonymizations[anon_name] = MaskedCorpus(anon_file_path)
 
         # Initial checks
-        self._check_anonymizations(anonymizations, metrics)
+        self._check_anonymizations(anonymizations)
 
         # Write results file header
         if results_file_path:
@@ -167,12 +167,13 @@ class TAE:
                     # Save results
                     results[metric_name] = metric_results
                     if results_file_path:
-                        self._write_into_results(results_file_path, [metric_name]+list(metric_results.values()))
+                        values = [f"{v:.3f}" for v in metric_results.values()] # 3 decimals
+                        self._write_into_results(results_file_path, [metric_name]+values)
                     
                     # Show results all together for inmediate comparison
                     msg = f"Results for {metric_name}:"
                     for name, value in metric_results.items():
-                        msg += f"\n\t\t\t\t\t{name}: {value}"
+                        msg += f"\n\t\t\t\t\t{name}: {value:.3f}" # 3 decimals
                     logging.info(msg)
             
             except Exception as e:
