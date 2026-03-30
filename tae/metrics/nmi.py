@@ -85,6 +85,8 @@ class NMI(MetricABC):
         
         return results
     
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], **kwargs) -> float:
+        return 0 # Unused
 
     def _get_corpora_embeddings(self, corpora:List[List[str]], embedding_model_name:str=NMI_EMBEDDING_MODEL_NAME,
                                  remove_mask_marks:bool=NMI_REMOVE_MASK_MARKS, mask_marks:List[str]=MASKING_MARKS,

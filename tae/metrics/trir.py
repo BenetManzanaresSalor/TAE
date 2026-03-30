@@ -87,6 +87,9 @@ class TRIR(MetricABC):
         results = {anon_name:values["eval_Accuracy"] for anon_name, values in results.items()}
 
         return results
+    
+    def _evaluate_anonymization(self, masked_docs:List[MaskedDocument], documents:Dict[str,Document], **kwargs) -> float:
+        return 0 # Unused
 
 #endregion
 
