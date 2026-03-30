@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 from tqdm.autonotebook import tqdm
 
-from ..utils import Document, MaskedDocument
+from ..utils import DOC_ID_KEY, ORIGINAL_TEXT_KEY, Document, MaskedDocument
 
 class MetricABC(ABC):
     
@@ -30,6 +30,7 @@ class MetricABC(ABC):
     #region Auxiliar
     
     def _get_anonymization_corpora(self, anonymizations:Dict[str, List[MaskedDocument]],
+                                   documents:Dict[str,Document],
                                    include_original_text:bool=False) -> Dict[str, Dict[str,str]]:
         corpora = {}
         
@@ -39,7 +40,7 @@ class MetricABC(ABC):
             anon_dicts[anon_name] = {masked_doc.doc_id:masked_doc for masked_doc in masked_docs}
 
         # Create a dictionary per document
-        for doc_id, doc in self.documents.items():
+        for doc_id, doc in documents.items():
             doc_dict = {DOC_ID_KEY:doc_id}
             if include_original_text:
                 doc_dict[ORIGINAL_TEXT_KEY] = doc.text

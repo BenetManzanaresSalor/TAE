@@ -66,7 +66,7 @@ class NMI(MetricABC):
         """
         
         # Create the corpora
-        orig_corpora = self._get_anonymization_corpora(anonymizations, include_original_text=True)
+        orig_corpora = self._get_anonymization_corpora(anonymizations, documents, include_original_text=True)
         nmi_corpora = [[doc_dict[ORIGINAL_TEXT_KEY] for doc_dict in orig_corpora.values()]] # Prepend original texts (ground truth)
         nmi_corpora += [[doc_dict[anon_name] for doc_dict in orig_corpora.values()] for anon_name in anonymizations.keys()]
 

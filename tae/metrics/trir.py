@@ -60,7 +60,7 @@ class TRIR(MetricABC):
         """
         
         # Load corpora
-        corpora = self._get_anonymization_corpora(anonymizations)
+        corpora = self._get_anonymization_corpora(anonymizations, documents, include_original_text=False)
 
         # Load background knowledge and add it to the corpora
         with open(background_knowledge_file_path, "r", encoding="utf-8") as f:
