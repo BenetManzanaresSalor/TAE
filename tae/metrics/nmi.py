@@ -96,7 +96,7 @@ class NMI(MetricABC):
         model.eval()
         
         # Collect embeddings
-        mask_marks_re_pattern = "|".join([m.upper() for m in mask_marks])
+        mask_marks_re_pattern = "|".join([re.escape(m) for m in mask_marks])
         for corpus in tqdm(corpora, desc="Computing embeddings"):
             # Remove mask marks if required
             if remove_mask_marks:
