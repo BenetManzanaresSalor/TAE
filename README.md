@@ -23,16 +23,16 @@ Experimental data was extracted from the [text-anonymization-benchmark](https://
   * [Corpus](#corpus)
   * [Anonymizations](#anonymizations)
   * [Metrics](#metrics)
+    * [Privacy protection](#privacy-protection)
+      * [Recall](#recall)
+      * [RecallPerEntityType](#recallperentitytype)
+      * [TRIR](#trir)
     * [Utility preservation](#utility-preservation)
       * [Precision](#precision)
       * [PrecisionWeighted](#precisionweighted)
       * [TPI](#tpi)
       * [TPS](#tps)
-      * [NMI](#nmi)
-    * [Privacy protection](#privacy-protection)
-      * [Recall](#recall)
-      * [RecallPerEntityType](#recallperentitytype)
-      * [TRIR](#trir)
+      * [NMI](#nmi)    
   * [Results](#results)
 
 
@@ -263,86 +263,6 @@ Subsections below detail all the parameters for each of the concepts, including 
   * *value* corresponds to the `metric_parameters | Dictionary`, which specifies the configurable parameters of a metric that are either mandatory or different from the default ones. This dictionary uses the `parameter_name | String` as *key* and the corresponding `parameter_value`, of varying type, as *value*. For all metrics except [TRIR](#trir), no parameters are mandatory, so `metric_parameters` can be empty, in which case the default settings are applied. **The following subsections describe the configurable parameters for each metric.**
 
 
-### Utility preservation
-The following set of metrics measure or estimate how well the transformed data retains the characteristics, relationships, or patterns of the original corpus. All these metrics are "the higher, the better".
-
-#### Precision
-Standard proxy of utility for text anonymization.
-It measures the percentage of terms masked by the anonymizations that were also masked by the **manual annotations**.
-TAE's implementation follows the version proposed in [Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/), which allows for multi-annotated documents (performing a micro-average over annotators), token-level and mention-level assessment and weighting based on information content (IC).
-
-The configurable parameters are:
-* `token_level | Boolean | Default=True`: If set to `True`, the precision is computed at the level of tokens, otherwise it is at the mention-level. The latter implies that the whole human-annotated mention (rather than some tokens) needs to be masked for being considered a true positive.
-* `weighting_model_name | String | Default=None`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class. If `None`, uniform weighting (same weights for all) is used. The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
-* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. Texts with more tokens than this will be splitted for IC computation.
-
-#### PrecisionWeighted
-[Precision](#precision) but employing IC weighting by default. It is implemented as a wrapper of the aforementioned [Precision](#precision), so the configurable parameters are exactly the same. The only difference is that `weighting_model_name` defaults to ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased). This avoids the need to select the `weighting_model_name` for IC weighting.
-
-#### TPI
-**Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
-<!--It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
-TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.-->
-
-The configurable parameters are:
-* `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
-  It can be an integer (e.g., N = 6) or the string "sentence".
-  When using an integer N, one of each N terms will be masked each round.
-  A larger N value implies a more accurate IC estimation (up to a certain point), but slower computation because more rounds are required.
-  If "sentence" is used, the text will be split into sentences, and one of the sentence terms will be masked at each round.
-  This approach is significantly slower but may provide the most accurate IC estimation.
-* `use_chunking | Boolean | Default=True`: Whether to use chunking for term span extraction. It is recommended for a more precise IC calculation.
-* `weighting_model_name | String | Default="google-bert/bert-base-uncased"`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class. If `None`, uniform weighting (same weights for all) is used. The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
-* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. Texts with more tokens than this will be splitted for IC computation.
-
-#### TPS
-**Text Preserved Similarity (TPS)** measures the percentage of information content (IC) still present in the masked documents, weighted by the similarity between replacement and original terms.
-It was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Applied Soft Computing, 2025](https://doi.org/10.1016/j.asoc.2025.114013).
-<!--TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.-->
-
-The configurable parameters are:
-* `similarity_model_name | String | Default="paraphrase-albert-base-v2"`: Name of the embedding model for calculating replacement similarity.
-    It must be compatible with the [Sentence Transformers library](https://www.sbert.net/), such as ["paraphrase-albert-base-v2"](https://huggingface.co/sentence-transformers/paraphrase-albert-base-v2).
-* `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
-    It can be an integer (e.g., N = 6) or the string "sentence".
-    When using an integer N, one of each N terms will be masked each round.
-    A larger N value implies a more accurate IC estimation (up to a certain point), but slower computation because more rounds are required.
-    If "sentence" is used, the text will be split into sentences, and one of the sentence terms will be masked at each round.
-    This approach is significantly slower but may provide the most accurate IC estimation.
-* `use_chunking | Boolean | Default=True`: Whether to use chunking for term span extraction. It is recommended for a more precise IC calculation.
-* `weighting_model_name | String | Default="google-bert/bert-base-uncased"`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class.
-    If `None`, uniform weighting (same weights for all) is used.
-    The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
-* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. 
-    Texts with more tokens than this will be splitted for IC computation.
-
-#### NMI
-It compares the K-means++ clustering resulting from the original corpus to that resulting from the anonymized documents.
-**Normalized Mutual Information (NMI)** is employed for assessing clustering similarity.
-This approach allows to measure empirical utility preservation for the generic downstream task of clustering.
-This metric was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Submitted, 2024](https://arxiv.org/abs/2412.12928).
-Clustering is repeated multiple times for minimizing the impact of randomness.
-Furthermore, for this particular implementation, clustering is carried out with multiple Ks increased linearly.
-The returned results are those corresponding to the K which provided the best [silouhette score](https://www.sciencedirect.com/science/article/pii/0377042787901257) in original texts clustering.
-
-The configurable parameters are:
-* `embedding_model_name | String | Default="all-MiniLM-L6-v2"`: Name of the embedding model to use for document vectorial representation.
-    It must be compatible with the [Sentence Transformers library](https://www.sbert.net/), such as ["all-MiniLM-L6-v2"](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
-* `remove_mask_marks | Boolean | Default=True`: Whether to remove mask marks (e.g., "SENSITIVE" or "PERSON") from the text before computing the embedding.
-* `mask_marks | List | Default=MASKING_MARKS`=constant in [utils.py](tae/utils.py): The list of mask marks to remove if `remove_mask_marks` is `True`.
-* `min_k | Integer | Default=2`: The minimum number of clusters `k` to consider.
-* `max_k | Integer | Default=32`: The maximum number of clusters `k` to consider.
-* `k_multiplier | Integer | Default=2`: The multiplier to increase `k` for each iteration.
-    Iterations start with from `min_k` and end when `max_k` is surpassed.
-    The one with best silouhette will be selected.
-* `n_clusterings | Integer | Default=5`: The number of clusterings to perform for each `k`.
-    The one with best silouhette will be selected.
-* `n_tries_per_clustering | Integer | Default=50`: Number of times the K-means algorithm is run with different centroid seeds, corresponding to `n_init` in [scikit-learn K-means](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html). The one with the best inertia will be selected.
-    This is done for each of the clusterings specified in `n_clusterings`.
-    Subsequently, the total number of clusterings for each `k` will be `n_clusterings*n_tries_per_clustering`.
-
-
-
 ### Privacy protection
 
 #### Recall
@@ -434,6 +354,87 @@ After execution of TRIR, in the `output_folder_path` you can find the following 
   | 01/08/2024 08:50:10 | 3     | 94      | 48      | 71      |
 
   At the end of the program, TRIR is predicted for all the anonymization methods using the best TRI model, employing the criteria defined for the setting `dev_set_column_name`. This final evaluation is also stored in the `Results.csv` file as an "additional epoch".
+
+
+
+### Utility preservation
+The following set of metrics measure or estimate how well the transformed data retains the characteristics, relationships, or patterns of the original corpus. All these metrics are "the higher, the better".
+
+#### Precision
+Standard proxy of utility for text anonymization.
+It measures the percentage of terms masked by the anonymizations that were also masked by the **manual annotations**.
+TAE's implementation follows the version proposed in [Pilán et al., The Text Anonymization Benchmark (TAB): A Dedicated Corpus and Evaluation Framework for Text Anonymization, Computational Linguistics, 2022](https://aclanthology.org/2022.cl-4.19/), which allows for multi-annotated documents (performing a micro-average over annotators), token-level and mention-level assessment and weighting based on information content (IC).
+
+The configurable parameters are:
+* `token_level | Boolean | Default=True`: If set to `True`, the precision is computed at the level of tokens, otherwise it is at the mention-level. The latter implies that the whole human-annotated mention (rather than some tokens) needs to be masked for being considered a true positive.
+* `weighting_model_name | String | Default=None`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class. If `None`, uniform weighting (same weights for all) is used. The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
+* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. Texts with more tokens than this will be splitted for IC computation.
+
+#### PrecisionWeighted
+[Precision](#precision) but employing IC weighting by default. It is implemented as a wrapper of the aforementioned [Precision](#precision), so the configurable parameters are exactly the same. The only difference is that `weighting_model_name` defaults to ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased). This avoids the need to select the `weighting_model_name` for IC weighting.
+
+#### TPI
+**Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
+<!--It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
+TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.-->
+
+The configurable parameters are:
+* `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
+  It can be an integer (e.g., N = 6) or the string "sentence".
+  When using an integer N, one of each N terms will be masked each round.
+  A larger N value implies a more accurate IC estimation (up to a certain point), but slower computation because more rounds are required.
+  If "sentence" is used, the text will be split into sentences, and one of the sentence terms will be masked at each round.
+  This approach is significantly slower but may provide the most accurate IC estimation.
+* `use_chunking | Boolean | Default=True`: Whether to use chunking for term span extraction. It is recommended for a more precise IC calculation.
+* `weighting_model_name | String | Default="google-bert/bert-base-uncased"`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class. If `None`, uniform weighting (same weights for all) is used. The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
+* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. Texts with more tokens than this will be splitted for IC computation.
+
+#### TPS
+**Text Preserved Similarity (TPS)** measures the percentage of information content (IC) still present in the masked documents, weighted by the similarity between replacement and original terms.
+It was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Applied Soft Computing, 2025](https://doi.org/10.1016/j.asoc.2025.114013).
+<!--TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.-->
+
+The configurable parameters are:
+* `similarity_model_name | String | Default="paraphrase-albert-base-v2"`: Name of the embedding model for calculating replacement similarity.
+    It must be compatible with the [Sentence Transformers library](https://www.sbert.net/), such as ["paraphrase-albert-base-v2"](https://huggingface.co/sentence-transformers/paraphrase-albert-base-v2).
+* `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
+    It can be an integer (e.g., N = 6) or the string "sentence".
+    When using an integer N, one of each N terms will be masked each round.
+    A larger N value implies a more accurate IC estimation (up to a certain point), but slower computation because more rounds are required.
+    If "sentence" is used, the text will be split into sentences, and one of the sentence terms will be masked at each round.
+    This approach is significantly slower but may provide the most accurate IC estimation.
+* `use_chunking | Boolean | Default=True`: Whether to use chunking for term span extraction. It is recommended for a more precise IC calculation.
+* `weighting_model_name | String | Default="google-bert/bert-base-uncased"`: Name of the model to be used for IC weighting, implemented in the `ICTokenWeighting` class.
+    If `None`, uniform weighting (same weights for all) is used.
+    The name must be a valid [HuggingFace's model](https://huggingface.co/models) name, such as ["google-bert/bert-base-uncased"](https://huggingface.co/google-bert/bert-base-uncased).
+* `weighting_max_segment_length | Integer | Default=100`: Maximum segment length for `ICTokenWeighting`. 
+    Texts with more tokens than this will be splitted for IC computation.
+
+#### NMI
+It compares the K-means++ clustering resulting from the original corpus to that resulting from the anonymized documents.
+**Normalized Mutual Information (NMI)** is employed for assessing clustering similarity.
+This approach allows to measure empirical utility preservation for the generic downstream task of clustering.
+This metric was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Submitted, 2024](https://arxiv.org/abs/2412.12928).
+Clustering is repeated multiple times for minimizing the impact of randomness.
+Furthermore, for this particular implementation, clustering is carried out with multiple Ks increased linearly.
+The returned results are those corresponding to the K which provided the best [silouhette score](https://www.sciencedirect.com/science/article/pii/0377042787901257) in original texts clustering.
+
+The configurable parameters are:
+* `embedding_model_name | String | Default="all-MiniLM-L6-v2"`: Name of the embedding model to use for document vectorial representation.
+    It must be compatible with the [Sentence Transformers library](https://www.sbert.net/), such as ["all-MiniLM-L6-v2"](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
+* `remove_mask_marks | Boolean | Default=True`: Whether to remove mask marks (e.g., "SENSITIVE" or "PERSON") from the text before computing the embedding.
+* `mask_marks | List | Default=MASKING_MARKS`=constant in [utils.py](tae/utils.py): The list of mask marks to remove if `remove_mask_marks` is `True`.
+* `min_k | Integer | Default=2`: The minimum number of clusters `k` to consider.
+* `max_k | Integer | Default=32`: The maximum number of clusters `k` to consider.
+* `k_multiplier | Integer | Default=2`: The multiplier to increase `k` for each iteration.
+    Iterations start with from `min_k` and end when `max_k` is surpassed.
+    The one with best silouhette will be selected.
+* `n_clusterings | Integer | Default=5`: The number of clusterings to perform for each `k`.
+    The one with best silouhette will be selected.
+* `n_tries_per_clustering | Integer | Default=50`: Number of times the K-means algorithm is run with different centroid seeds, corresponding to `n_init` in [scikit-learn K-means](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html). The one with the best inertia will be selected.
+    This is done for each of the clusterings specified in `n_clusterings`.
+    Subsequently, the total number of clusterings for each `k` will be `n_clusterings*n_tries_per_clustering`.
+
 
 
 ## Results
