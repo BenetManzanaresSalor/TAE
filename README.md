@@ -67,7 +67,7 @@ Text Anonymization Evaluator (TAE)
 
 
 # Install
-Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and planning to upload the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi) (*work in progress*).
+Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and planning to upload the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi).
 
 ## From source
 If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from source following the next steps:
@@ -93,7 +93,7 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
         ```
 
 ## From PyPi
-**IMPORTANT: This package has not yet been uploaded to PyPi, this is a work in progress.**
+**IMPORTANT: This package has not yet been uploaded to PyPi.**
 
 If you want to use TAE from code (see [Usage section](#usage-examples) for details), we recommend installing it from PyPi via Pip with the following command:
 ```console
