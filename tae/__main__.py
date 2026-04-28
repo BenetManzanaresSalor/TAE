@@ -25,7 +25,7 @@ MANDATORY_CONFIG_KEYS = [CORPUS_CONFIG_KEY, ANONYMIZATIONS_CONFIG_KEY, RESULTS_C
 if __name__ == "__main__":
 
 
-    #region Additional configurations for running standalone
+    #region Additional configurations for standalone execution
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO) # Configure logging
     logging.getLogger('sentence_transformers').setLevel(logging.WARNING)    # Suppress INFO logs from sentence_transformers

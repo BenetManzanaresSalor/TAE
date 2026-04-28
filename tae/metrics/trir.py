@@ -819,7 +819,6 @@ class TRI():
         # Define TrainingArguments
         args = TrainingArguments(
             output_dir=task_config.trainer_folder_path,
-            overwrite_output_dir=True,
             load_best_model_at_end=load_best_model_at_end,
             save_strategy=save_strategy,
             save_total_limit=1,

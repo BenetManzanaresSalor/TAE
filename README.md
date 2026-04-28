@@ -1,7 +1,4 @@
 <h1 align="center">Text Anonymization Evaluator (TAE)</h1>
-<p align="center">
-  <img src="https://img.shields.io/badge/License-MIT-orange" alt="License MIT"/>
-</p>
 
 This repository contains the code and experimental data for the **Text Anonymization Evaluator** (TAE), an evaluation tool for anonymized documents including multiple state-of-the-art metrics for both utility preservation and privacy protection assessment.
 
@@ -42,10 +39,10 @@ Experimental data was extracted from the [text-anonymization-benchmark](https://
 ```
 Text Anonymization Evaluator (TAE)
 │   README.md                               # This README
-│   pyproject.toml                          # Package project defintion file, including dependencies for pip
-│   environment.yml                         # Dependencies file for Conda
-│   LICENSE.txt                             # License file
+│   pyproject.toml                          # Project defintion file, including Pip dependencies
+│   environment_win.yml                     # Dependencies file for Conda
 │   example_config.json                     # Example configuration file
+│   LICENSE.txt                             # License file
 └───tae                                  # Package source code folder
 │   │   tae.py                              # Script describing the TAE class
 │   |   utils.py                            # Script including the general common-usage classes
@@ -67,34 +64,43 @@ Text Anonymization Evaluator (TAE)
 
 
 # Install
-Our implementation uses [Python 3.9.19](https://www.python.org/downloads/release/python-3919/) as programming language. For dependencies management, we employed [Conda](https://docs.conda.io/en/latest/), with all used packages and resources listed in the [environment.yml]([environment.yml) file. However, we also considered **Pip**, including an equivalent [pyproject.toml](pyproject.toml) file and planning to upload the package to [PyPi](https://pypi.org/) under the name `taeval`. Below we detail how to install the package [from source](#from-source) and [from PyPi](#from-pypi).
+This section covers how to install the package either [from source](#from-source) or [from PyPi](#from-pypi). For both options, [Python 3.11](https://www.python.org/downloads/release/python-31115/) is expected to be already installed in your machine.
 
 ## From source
-If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from source following the next steps:
+If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from the source code following the next steps:
 1. Download or clone this repository:
     ```console
     git clone https://github.com/BenetManzanaresSalor/TAE
     cd TAE
     ```
 2. Install dependencies:
-    * Option A: Using Conda 
-        * Install [Conda](https://docs.conda.io/en/latest/) if you haven't already.
-        * Create a new Conda environment using the [environment.yml](environment.yml) file:
-            ```console
-            conda create --name ENVIRONMENT_NAME --file environment.yml
-            ```
-        * Activate the environment:
-            ```console
-            conda activate ENVIRONMENT_NAME
-            ```
-    * Option B: Using Pip (this uses the pyproject.toml file)
+    * **Option A: Using Pip.**
+    The [pyproject.toml](pyproject.toml) file ensures compatibility with your system. By default, it installs the CPU-only version of [PyTorch](https://pytorch.org/get-started/locally/). For GPU acceleration (recommended), use the `--extra-index-url` option to provide the index URL corresponding to your CUDA version:
+      * CUDA 13.0:
+        ```console
+        pip install -e . --extra-index-url https://download.pytorch.org/whl/cu130
+        ```
+      * CUDA 12.1:
+        ```console
+        pip install -e . --extra-index-url https://download.pytorch.org/whl/cu121
+        ```
+      * CPU-only:
         ```console
         pip install -e .
         ```
+    * **Option B: Using Conda.**
+    For replicability, use the provided [environment_win.yml](environment_win.yml) file, corresponding to machine using Windows 11, [Conda 25.5.1](https://github.com/conda/conda/releases/tag/25.5.1), [Python 3.11.15](https://www.python.org/downloads/release/python-31115/) and [CUDA 13.1](https://docs.nvidia.com/cuda/archive/13.1.0/cuda-toolkit-release-notes/index.html):
+        * Create the environment:
+            ```console
+            conda env create -f environment_win.yml -n <ENVIRONMENT_NAME>            
+            ```
+        * Activate the environment:
+            ```console
+            conda activate <ENVIRONMENT_NAME>
+            ```
 
 ## From PyPi
-**IMPORTANT: This package has not yet been uploaded to PyPi.**
-
+**IMPORTANT: This package is not yet available on PyPI.**
 If you want to use TAE from code (see [Usage section](#usage-examples) for details), we recommend installing it from PyPi via Pip with the following command:
 ```console
 pip install taeval
@@ -329,13 +335,13 @@ This metric requires **two mandatory parameters**:
   * `load_saved_pretraining | Boolean | Default=True`: If `use_additional_pretraining` is true and the `Pretrained_Model.pt` file exists, loads that additionally pretrained base model instead of running the process. It requires a previous execution with `save_additional_pretraining=True`.
   * `pretraining_epochs | Integer | Default=3`: Number of additional pretraining epochs.
   * `pretraining_batch_size | Integer | Default=8`: Size of the batches for additional pretraining.
-  * `pretraining_learning_rate | Float | Default=5e-05`: Learning rate for the [AdamW optimizer](https://huggingface.co/docs/bitsandbytes/main/en/reference/optim/adamw) to use during additional pretraining.
+  * `pretraining_learning_rate | Float | Default=5e-05`: Learning rate for the [AdamW optimizer](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html) to use during additional pretraining.
   * `pretraining_mlm_probability | Float | Default=0.15`: Probability of masking tokens by the [Data Collator](https://huggingface.co/docs/transformers/main_classes/data_collator#transformers.DataCollatorForLanguageModeling.mlm_probability) during the additional pretraining with MLM.
   * `pretraining_sliding_window | String | Default="512-128"`: Sliding window configuration for additional pretraining. Since input documents are assumed to be longer than the maximum number of tokens processable by the language model (maximum sequence length), the text is split into multiple samples. A sliding window mechasim has been implemented, defined by the size of the window and the overlap with the previous window. For instance, use "512-128" for samples/splits of 512 tokens and an overlap of 128 tokens with the previous split/sample. Alternatevely, if "No" is used, one sample/split per sentence will be created, leveraging that sentences are generally shorter than the model maximum sequence length. Reducing the window size and/or incrementing the overlap will result in more samples/splits, what increments the training time.
 * **Finetuning**:
   * `finetuning_epochs | Integer | Default=15`: Number of epochs to perform during the finetuning.
   * `finetuning_batch_size | Integer | Default=16`: Size of the batches for finetuning.
-  * `finetuning_learning_rate | Float | Default=5e-05`: Learning rate for the [AdamW optimizer](https://huggingface.co/docs/bitsandbytes/main/en/reference/optim/adamw) to use during finetuning.
+  * `finetuning_learning_rate | Float | Default=5e-05`: Learning rate for the [AdamW optimizer](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html) to use during finetuning.
   * `finetuning_sliding_window | String | Default="100-25"`: Sliding window configuration for finetuning. Since input documents are assumed to be longer than the maximum number of tokens processable by the language model (maximum sequence length), the text is split into multiple samples. A sliding window mechasim has been implemented, defined by the size of the window and the overlap with the previous window. For example, use "512-128" for samples/splits of 512 tokens and an overlap of 128 tokens with the previous split/sample. Alternatevely, if "No" is used, one sample/split per sentence will be created, leveraging that sentences are generally shorter than the model maximum sequence length. Reducing the window size and/or increasing the overlap will result in more samples/splits, what increments the training time.
   * `dev_set_column_name | String | Default=False`: Specifies the anonymization from [anonymizations](#anonymizations) to be used for model selection. If set to `False` (boolean, not string), the model with the highest average accuracy across all anonymization sets will be selected as the final model. If an actual name is provided, the accuracy corresponding to that specific anonymization will be used to choose the best model.
   * `save_finetuning | Boolean | Default=True`: Whether to save the TRI model after the finetuning. The model will be saved as a [Transformers' pipeline](https://huggingface.co/docs/transformers/main_classes/pipelines), creating a folder `TRI_Pipeline` in the `output_folder_path` directory, containing the model file `model.safetensors`.

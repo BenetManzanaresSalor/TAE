@@ -50,18 +50,14 @@ class TPI(MetricABC):
 
         # Initialize outputs
         tpi_array = np.empty(len(masked_docs))
-        if self.ics_dict is None:
-            self.ics_dict = {} # Used to avoid recomputing, for each anonymization, the original document's ICs (which are always identical)
         ic_multiplier_array = np.empty(len(masked_docs))
 
-        # Define token weighting
-        if weighting_model_name is None:
-            token_weighting = UniformTokenWeighting()        
-        else:
-            token_weighting = ICTokenWeighting(model_name=weighting_model_name, device=DEVICE,
-                                               max_segment_length=weighting_max_segment_length)
+        # Get or initialize the IC dict, which is used to avoid recomputing, for each anonymization, the original document's ICs (which are always identical)
+        if self.ics_dict is None:
+            self.ics_dict = {}
 
         # For each masked document
+        token_weighting = None
         for i, masked_doc in enumerate(masked_docs):
             doc = documents[masked_doc.doc_id]
 
@@ -72,10 +68,19 @@ class TPI(MetricABC):
 
             # Get IC for all spans
             if masked_doc.doc_id in self.ics_dict:
-                spans_IC = self.ics_dict[masked_doc.doc_id] # Use precomputed ICs
+                spans_IC = self.ics_dict[masked_doc.doc_id] # Use cached ICs
             else:
+                # If there is no cache, create the token_weighting for computing ICs
+                if token_weighting is None:
+                    if weighting_model_name is None:
+                        token_weighting = UniformTokenWeighting()
+                    else:
+                        token_weighting = ICTokenWeighting(model_name=weighting_model_name, device=DEVICE,
+                                                        max_segment_length=weighting_max_segment_length)
+                
+                # Compute ICs and cache them
                 spans_IC = self._get_ics(spans, doc, term_alterning, token_weighting)
-                self.ics_dict[masked_doc.doc_id] = spans_IC # Store ICs (useful as cache)
+                self.ics_dict[masked_doc.doc_id] = spans_IC
             
             # Get TIC of the original and masked documents
             original_TIC = spans_IC.sum()
@@ -93,8 +98,10 @@ class TPI(MetricABC):
             nonmasked_term_IC = masked_TIC / n_nonmasked_terms if n_nonmasked_terms != 0 else 0
             ic_multiplier_array[i] = masked_term_IC / nonmasked_term_IC if nonmasked_term_IC != 0 else 0
 
+        
         # Dispose token weighting
-        del token_weighting
+        if token_weighting is not None:
+            del token_weighting
 
         # Get corpus TPI as the mean
         tpi = tpi_array.mean()
