@@ -168,8 +168,10 @@ class TAE:
                     results[metric_name] = metric_results
                     value_strings = []
                     for value in metric_results.values():
+                        try: value = float(value) # Try to transform to float for formatting
+                        except: pass
                         value_strings.append(f"{value:.3f}" if isinstance(value, float) else str(value))
-                    if results_file_path:                        
+                    if results_file_path:
                         self._write_into_results(results_file_path, [metric_name]+value_strings)
                     
                     # Show results all together for inmediate comparison

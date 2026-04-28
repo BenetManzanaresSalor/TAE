@@ -30,6 +30,8 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO) # Configure logging
     logging.getLogger('sentence_transformers').setLevel(logging.WARNING)    # Suppress INFO logs from sentence_transformers
     logging.getLogger('transformers').setLevel(logging.WARNING)             # Suppress INFO logs from transformers
+    logging.getLogger("huggingface_hub").setLevel(logging.WARNING)          # Suppress INFO logs from huggingface_hub
+    logging.getLogger("httpx").setLevel(logging.WARNING)                    # Suppress INFO logs from httpx (used by huggingface_hub)
     logging.getLogger('torch').setLevel(logging.WARNING)                    # Suppress INFO logs from torch
 
     #endregion
