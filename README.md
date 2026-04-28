@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![MIT License](https://img.shields.io/badge/license-MIT-blue?style=plastic)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue?style=plastic)](LICENSE.txt)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue)](https://www.python.org/downloads/release/python-31115/)
 [![v0.1.0](https://img.shields.io/badge/pypi-v1.2.0-orange)](https://pypi.org/project/taeval/1.2.0)
 
