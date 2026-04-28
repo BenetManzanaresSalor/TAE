@@ -49,6 +49,12 @@ class TAE:
             if type(corpus)!=list:
                 raise RuntimeError("Corpus JSON file must be a list of documents")
         
+        # Dowload spaCy models if they are not present        
+        for model in ["en_core_web_lg", spacy_model_name]:
+            if not spacy.util.is_package(model):
+                logging.info(f"Model {model} not found. Downloading...")
+                spacy.cli.download(model)
+        
         # Preprocess corpus
         self._preprocess_corpus(corpus, spacy_model_name)
 

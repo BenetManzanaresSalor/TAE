@@ -15,20 +15,20 @@
     },
     "results_file_path":"outputs/results.csv",
     "metrics":{
-        "_Recall":{
+        "Recall":{
             "token_level":true,
             "include_direct":true,
             "include_quasi":true
         },
-        "_Recall_Identifiers-only":{
+        "Recall_Identifiers-only":{
             "token_level":true,
             "include_direct":true,
             "include_quasi":false
         },
-        "_RecallPerEntityType":{
+        "RecallPerEntityType":{
             
         },
-        "_TRIR":{
+        "TRIR":{
             "output_folder_path":"outputs/tab/TAB_test_BK=Public",
             "background_knowledge_file_path":"data/tab/bks/TAB_test_BK=Public.json",
             "load_saved_pretreatment":true,

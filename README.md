@@ -64,10 +64,11 @@ Text Anonymization Evaluator (TAE)
 
 
 # Install
-This section covers how to install the package either [from source](#from-source) or [from PyPi](#from-pypi). For both options, [Python 3.11](https://www.python.org/downloads/release/python-31115/) is expected to be already installed in your machine.
+This section covers how to install the package either [from source](#from-source) or [from PyPi](#from-pypi). For both options, [Python 3.11](https://www.python.org/downloads/release/python-31115/) is expected to be already installed in your machine. 
+*NOTE: On the first run, one or more [spaCy models](https://spacy.io/models/en/) will be also installed.*
 
 ## From source
-If you want to use TAE from CLI (see [Usage section](#usage-examples) for details), we recommend to install it from the source code following the next steps:
+To use TAE from CLI (see the [From CLI](#from-cli) section for details), we recommend to install it from the source code following the next steps:
 1. Download or clone this repository:
     ```console
     git clone https://github.com/BenetManzanaresSalor/TAE
@@ -75,7 +76,7 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
     ```
 2. Install dependencies:
     * **Option A: Using Pip.**
-    The [pyproject.toml](pyproject.toml) file ensures compatibility with your system. By default, it installs the CPU-only version of [PyTorch](https://pytorch.org/get-started/locally/). For GPU acceleration (recommended), use the `--extra-index-url` option to provide the index URL corresponding to your CUDA version:
+    The [pyproject.toml](pyproject.toml) file ensures compatibility with your system. By default, it installs the CPU-only version of [PyTorch](https://pytorch.org/get-started/locally/), resulting in slow inference with language models. For GPU acceleration (recommended), use the `--extra-index-url` option to provide the index URL corresponding to your CUDA version:
       * CUDA 13.0:
         ```console
         pip install -e . --extra-index-url https://download.pytorch.org/whl/cu130
@@ -89,7 +90,7 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
         pip install -e .
         ```
     * **Option B: Using Conda.**
-    For replicability, use the provided [environment_win.yml](environment_win.yml) file, corresponding to machine using Windows 11, [Conda 25.5.1](https://github.com/conda/conda/releases/tag/25.5.1), [Python 3.11.15](https://www.python.org/downloads/release/python-31115/) and [CUDA 13.1](https://docs.nvidia.com/cuda/archive/13.1.0/cuda-toolkit-release-notes/index.html):
+    If aiming for replicability, use the provided [environment_win.yml](environment_win.yml) file, corresponding to machine using Windows 11, [Conda 25.5.1](https://github.com/conda/conda/releases/tag/25.5.1), [Python 3.11.15](https://www.python.org/downloads/release/python-31115/) and [CUDA 13.1](https://docs.nvidia.com/cuda/archive/13.1.0/cuda-toolkit-release-notes/index.html):
         * Create the environment:
             ```console
             conda env create -f environment_win.yml -n <ENVIRONMENT_NAME>            
@@ -100,23 +101,33 @@ If you want to use TAE from CLI (see [Usage section](#usage-examples) for detail
             ```
 
 ## From PyPi
-**IMPORTANT: This package is not yet available on PyPI.**
-If you want to use TAE from code (see [Usage section](#usage-examples) for details), we recommend installing it from PyPi via Pip with the following command:
-```console
-pip install taeval
-```
+To use TAE programmatically (see the [From code](#from-code) section for details), we recommend installing it from [PyPi](https://pypi.org/project/taeval/) using the `pip install taeval` command. By default, this installs the CPU-only version of [PyTorch](https://pytorch.org/get-started/locally/), resulting in slow inference with language models. For GPU acceleration (recommended), use the `--extra-index-url` option to provide the index URL corresponding to your CUDA version:
+  * CUDA 13.0:
+    ```console
+    pip install taeval --extra-index-url https://download.pytorch.org/whl/cu130
+    ```
+  * CUDA 12.1:
+    ```console
+    pip install taeval --extra-index-url https://download.pytorch.org/whl/cu121
+    ```
+  * CPU-only:
+    ```console
+    pip install taeval
+    ```
+
+*NOTE: The package is named `taeval` on PyPI to avoid naming conflicts, but you import it as `tae` in your code.*
 
 
 
 
 # Usage examples
-TAE was designed to be run [from CLI](#from-cli), but it can also be executed [from code](#from-code). In the following, we instruct into how to execute it using both approaches, assuming that the steps from the [Install section](#install) have been already completed.
+TAE was designed to be run [from CLI](#from-cli), but it can also be executed [from code](#from-code). In the following, we instruct into how to execute it using both approaches, assuming that the steps from the [Install](#install) section have been already completed.
 
-*NOTE: During execution with either approach, the current progress, errors, and results will be displayed. In addition, all evaluation results will be stored in a [CSV file at the specified results filepath](#results).*
+*NOTE: During execution with either approach, the current progress and errors will be displayed. In addition, all evaluation results will be stored in a [CSV file at the specified results filepath](#results).*
 
 
 ## From CLI
-Running from CLI requires to pass as argument the path to a JSON configuration file. This file contains a dictionary specifiying the corpus, anonymizations, metrics and results filepath to use (check the [Configuration section](#configuration) for details).
+Running from CLI requires to pass as argument the path to a JSON configuration file. This file contains a dictionary specifiying the corpus, anonymizations, metrics and results filepath to use (check the [Configuration](#configuration) section for details).
 
 For instance, for using the [example_config.json](example_config.json) example configuration file, run the following command:
 ```console
@@ -126,7 +137,7 @@ This assumes that the current working directory contains the [tae](tae) package 
 
 
 ## From code
-Running from code requires creating an instance of the `TAE` class (defined in [tae.py](tae/tae.py)), passing the desired configuration as arguments. This includes the corpus, anonymizations, metrics, and results filepath (see the [Configuration section](#configuration) for details). The setup is equivalent to using a JSON configuration file [from the CLI](#from-cli), but defined directly in code. Depending on the use case, running from code can help reduce the data load from disk.
+Running from code requires creating an instance of the `TAE` class (defined in [tae.py](tae/tae.py)) and run the `evaluate` method, passing the desired configuration as arguments. This includes the corpus, anonymizations, metrics, and results filepath (see the [Configuration](#configuration) section for details). The setup is equivalent to using a JSON configuration file [from the CLI](#from-cli), but defined directly in code. Depending on the use case, running from code can help reduce the data load from disk.
 
 The following script exemplifies how to use TAE from code (very similar to what is done in [\_\_main\_\_.py](tae/__main__.py)):
 ```python
@@ -137,9 +148,9 @@ tae = TAE("data/tab/corpora/TAB_test_Corpus.json")
 
 # Load anonymizations
 anonymizations = {
-    "Presidio":"data/tab/anonymizaitons/TAB_test_Presidio_Entity.json", 
-    "spaCy":"data/tab/anonymizaitons/TAB_test_spaCy_Entity.json",
-    "Manual": "data/tab/anonymizaitons/TAB_test_Manual_Entity.json"
+    "Presidio":"data/tab/anonymizations/TAB_test_Presidio.json", 
+    "spaCy":"data/tab/anonymizations/TAB_test_spaCy.json",
+    "Manual": "data/tab/anonymizations/TAB_test_Manual_Supression.json"
 }
 
 # Define metrics dictionary
@@ -154,6 +165,7 @@ results_file_path = "outputs/results.csv"
 
 # Run evaluation
 results = tae.evaluate(anonymizations, metrics, results_file_path)
+print(results)
 
 # NOTE: The TAE instance can be reused for evaluating the corpus using other anonymizations, metrics and/or results filepath
 ```
@@ -187,7 +199,7 @@ class YourNewMetric(MetricABC):
 
 
 # Configuration
-The package allows to configure the corpus, anonymizations, metrics and results filepath to use. As specified in the [Usage section](#usage-examples), this can be done using a JSON configuration file (*e.g.*, [example_config.json](example_config.json)) or directly from code (as shown in the [from code section](#from-code)).
+The package allows to configure the corpus, anonymizations, metrics and results filepath to use. As specified in the [Usage examples](#usage-examples) section, this can be done using a JSON configuration file (*e.g.*, [example_config.json](example_config.json)) or directly from code (as shown in the [From code](#from-code) section).
 Subsections below detail all the parameters for each of the concepts, including input and output files format.
 
 

@@ -65,7 +65,7 @@ MASKING_MARKS = ["SENSITIVE", "PERSON", "DEM", "LOC",
 # Check for GPU with CUDA
 if torch.cuda.is_available():
     DEVICE = torch.device("cuda:0")
-    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1" # For easier debugging of CUDA errors (shows the line where the error occurs instead of just "CUDA error: ...")
 else:
     DEVICE = torch.device("cpu")
 

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tae"
+name = "taeval"
 version = "1.2.0"
 description = "Text Anonymization Evaluator (TAE)"
 authors = [
@@ -13,7 +13,7 @@ maintainers = [
     { name = "Benet Manzanares-Salor", email = "benet.manzanares@urv.cat" }
 ]
 keywords = ["text anonymization", "evaluation", "privacy", "utility", "nlp", "text processing", "language processing"]
-license = { text = "MIT" }
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
@@ -40,12 +40,15 @@ dependencies = [
     "scikit-learn >= 1.5.0",
     "scipy >= 1.13.0",
     "tqdm >= 4.66.0",
-    "en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl",
-    "en-core-web-md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl",
 ]
 
 [project.urls]
 repository = "https://github.com/BenetManzanaresSalor/TAE"
 
 [tool.setuptools.packages.find]
-include = ["tae*"]
+include = ["tae"]
+where = ["."]
+
+[tool.setuptools]
+# This stops setuptools from adding the 'license-file' field to the metadata
+license-files = []
