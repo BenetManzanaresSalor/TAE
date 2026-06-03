@@ -21,7 +21,7 @@ class TPI(MetricABC):
         """
         **Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
         This metric is used to assess utility preservation.
-        It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
+        It was proposed in [Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, 2026](https://doi.org/10.1016/j.neunet.2026.109079).
         The `ICTokenWeighting` is employed for measuring IC.
         TPI can be seen as an simplified/ablated version of Text Preserved Similarity (TPS), not taking into account replacements and their similarities.
 

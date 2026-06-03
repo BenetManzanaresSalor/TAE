@@ -401,8 +401,8 @@ The configurable parameters are:
 
 #### TPI
 **Text Preserved Information (TPI)** measures the percentage of information content (IC) still present in the masked documents.
-<!--It was proposed in **Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, In Press, 2026**.
-TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.-->
+It was proposed in [Manzanares-Salor et al., Unsupervised utility evaluation of text anonymization methods via neural language models, Neural Networks, 2026](https://doi.org/10.1016/j.neunet.2026.109079).
+TPI can be seen as an simplified/ablated version of [TPS](#tps) (presented below), not taking into account replacements and their similarities.
 
 The configurable parameters are:
 * `term_alterning | Integer or String | Default=6`: Parameter for term alternation in the multi-round IC calculation.
@@ -418,7 +418,7 @@ The configurable parameters are:
 #### TPS
 **Text Preserved Similarity (TPS)** measures the percentage of information content (IC) still present in the masked documents, weighted by the similarity between replacement and original terms.
 It was proposed in [Pilán et al., Truthful Text Sanitization Guided by Inference Attacks, Applied Soft Computing, 2025](https://doi.org/10.1016/j.asoc.2025.114013).
-<!--TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.-->
+TPS can be seen as a replacement-compatible version of [TPI](#tpi) (presented above), pondering it with replacements' similarity.
 
 The configurable parameters are:
 * `similarity_model_name | String | Default="paraphrase-albert-base-v2"`: Name of the embedding model for calculating replacement similarity.
